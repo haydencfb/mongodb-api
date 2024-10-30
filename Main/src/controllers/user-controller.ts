@@ -86,7 +86,11 @@ import { User, Thought } from '../models/index.js';
  // add friend to friend list
  export const addFriend = async(req: Request, res: Response) =>{
    try {
-     const dbUserData = await User.findOneAndUpdate({ _id: req.params.userId }, { $addToSet: { friends: req.params.friendId } }, { new: true });
+     const dbUserData = await User.findOneAndUpdate(
+      { _id: req.params.userId }, 
+      { $addToSet: { friends: req.params.friendId } }, 
+      { new: true }
+    );
 
      if (!dbUserData) {
        return res.status(404).json({ message: 'No user with this id!' });
