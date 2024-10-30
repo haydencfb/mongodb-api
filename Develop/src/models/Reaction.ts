@@ -1,22 +1,28 @@
 import { Schema, Document, ObjectId, Types } from 'mongoose';
 
-interface IResponse extends Document {
+interface IReaction extends Document {
   reactionId: ObjectId;
-  responseBody: string;
+  reactionBody: string;
   username: string;
   createdAt: Date;
 }
 
-const responseSchema = new Schema<IResponse>(
+const reactionSchema = new Schema<IReaction>(
   {
     reactionId: {
       type: Schema.Types.ObjectId,
       default: () => new Types.ObjectId(),
     },
-    responseBody: {
+    reactionBody: {
       type: String,
       required: true,
-      maxlength: 280,
+      // maxlength: 280,
+      validate: {
+        validator: function(value) {
+          return value.length <= 280;
+        },
+        message: 'String must be less than 280 characters long'
+      }
     },
     username: {
       type: String,
@@ -25,6 +31,7 @@ const responseSchema = new Schema<IResponse>(
     createdAt: {
       type: Date,
       default: Date.now,
+      // get: (timestamp:any) => dateFormat(timestamp)
     },
   },
   {
@@ -35,4 +42,4 @@ const responseSchema = new Schema<IResponse>(
   }
 );
 
-export default responseSchema;
+export default reactionSchema;
