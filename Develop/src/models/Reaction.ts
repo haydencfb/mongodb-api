@@ -1,10 +1,11 @@
 import { Schema, Document, ObjectId, Types } from 'mongoose';
+import dayjs from 'dayjs';
 
 interface IReaction extends Document {
   reactionId: ObjectId;
   reactionBody: string;
   username: string;
-  createdAt: Date;
+  createdAt: Schema.Types.Date;
 }
 
 const reactionSchema = new Schema<IReaction>(
@@ -16,7 +17,6 @@ const reactionSchema = new Schema<IReaction>(
     reactionBody: {
       type: String,
       required: true,
-      // maxlength: 280,
       validate: {
         validator: function(value) {
           return value.length <= 280;
@@ -31,7 +31,7 @@ const reactionSchema = new Schema<IReaction>(
     createdAt: {
       type: Date,
       default: Date.now,
-      // get: (timestamp:any) => dateFormat(timestamp)
+      get: (timestamp:any) => dayjs(timestamp).format('MM/DD/YYYY')
     },
   },
   {

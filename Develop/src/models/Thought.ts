@@ -1,11 +1,12 @@
 import { Schema, model } from 'mongoose';
 import reactionSchema from './Reaction.js';
+import dayjs from 'dayjs';
 
 interface IThought {
   thoughtText: String;
   createdAt: Schema.Types.Date;
   username: String;
-  reactions: [reactionSchema];
+  reactions: [typeof reactionSchema];
 }
 
 // Schema to create Post model
@@ -24,7 +25,7 @@ const thoughtSchema = new Schema<IThought>(
     createdAt: {
       type: Date,
       default: Date.now,
-      // get: (timestamp:any) => dateFormat(timestamp)
+      get: (timestamp:any) => dayjs(timestamp).format('MM/DD/YYYY')
     },
     username: {
       type: String,
@@ -46,6 +47,6 @@ thoughtSchema
     return this.reactions.length;
   })
 
-const Thought = model('thought', thoughtSchema);
+const Thoughts = model('thought', thoughtSchema);
 
-export default Thought;
+export default Thoughts;
