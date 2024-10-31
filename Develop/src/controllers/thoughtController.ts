@@ -40,12 +40,11 @@ import { Request, Response } from 'express';
 
   // create a new thought
   export const createThought = async (req: Request, res: Response) => {
-    const { thought } = req.body;
     try {
-      // const thought = await Thoughts.create(req.body);
+      const thought = await Thoughts.create(req.body);
       // const user = await User.findOneAndUpdate(
       //   { _id: req.body.userId },
-      //   { $addToSet: { thoughts: Thoughts._id } },
+      //   { $addToSet: { thoughts: thought.id } },
       //   { new: true }
       // );
   
