@@ -37,16 +37,26 @@ import { Request, Response } from 'express';
     }
   }
 
-  // TODO: updates a single user
+  // updates a single user
   export const updateUser = async(req: Request, res: Response) => {
     try {
-      
+      const user = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        { $set: req.body },
+        { runValidators: true, new: true }
+      );
+
+      if (!user) {
+        return res.status(404).json({ message: 'No user with this id!' });
+      }
+
+      return res.json(user)
     } catch (err) {
       return res.status(500).json(err);
     }
   }
 
-  // TODO: deletes a single user
+  // deletes a single user
   export const deleteUser = async(req: Request, res: Response) => {
     try {
       const user = await User.findOneAndDelete({ _id: req.params.studentId });
