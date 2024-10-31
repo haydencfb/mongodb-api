@@ -1,7 +1,7 @@
 import { Thoughts, User } from '../models/index.js';
 import { Request, Response } from 'express';
 
-
+  // gets all thoughts
   export const getThoughts = async (_req: Request, res: Response) => {
     try {
       const thoughts = await Thoughts.find();
@@ -11,16 +11,26 @@ import { Request, Response } from 'express';
     }
   }
 
+  // gets a single thought
   export const getSingleThought = async (req: Request, res: Response) => {
+    const { thoughtId } = req.params;
     try {
-      const thought= await Thoughts.findOne({ _id: req.params.videoId })
+      // const thought = await Thoughts.findOne({ _id: req.params.videoId })
   
-      if (!thought) {
-        return res.status(404).json({ message: 'No thought with that ID' });
+      // if (!thought) {
+      //   return res.status(404).json({ message: 'No thought with that ID' });
+      // }
+  
+      // res.json(thought);
+      // return; 
+      const user = await Thoughts.findById(thoughtId);
+
+      if (user) {
+        return res.json(user);
+      } else {
+        return res.status(404).json({ message: 'User not found' });
       }
-  
-      res.json(thought);
-      return; 
+
     } catch (err) {
       res.status(500).json(err);
     }
@@ -28,24 +38,28 @@ import { Request, Response } from 'express';
     return;
   }
 
-  // create a new video
+  // create a new thought
   export const createThought = async (req: Request, res: Response) => {
+    const { thought } = req.body;
     try {
-      const thought = await Thoughts.create(req.body);
-      const user = await User.findOneAndUpdate(
-        { _id: req.body.userId },
-        { $addToSet: { thoughts: Thoughts._id } },
-        { new: true }
-      );
+      // const thought = await Thoughts.create(req.body);
+      // const user = await User.findOneAndUpdate(
+      //   { _id: req.body.userId },
+      //   { $addToSet: { thoughts: Thoughts._id } },
+      //   { new: true }
+      // );
   
-      if (!user) {
-        return res.status(404).json({
-          message: 'thought created, but found no user with that ID',
-        });
-      }
+      // if (!user) {
+      //   return res.status(404).json({
+      //     message: 'thought created, but found no user with that ID',
+      //   });
+      // }
   
-      res.json('Created the thought 🎉');
-      return;
+      // res.json('Created the thought 🎉');
+      // return;
+
+      const newThought = await Thoughts.create({ thought });
+      return res.status(201).json(newThought);
     } catch (err) {
       console.log(err);
       res.status(500).json(err);
@@ -54,10 +68,11 @@ import { Request, Response } from 'express';
     return;
   }
 
+  // updates a selected thought
   export const updateThought = async (req: Request, res: Response) => {
     try {
       const thought = await Thoughts.findOneAndUpdate(
-        { _id: req.params.videoId },
+        { _id: req.params.thoughtId },
         { $set: req.body },
         { runValidators: true, new: true }
       );
@@ -75,6 +90,7 @@ import { Request, Response } from 'express';
     }
   }
 
+  // deletes a selected thought
   export const deleteThought = async (req: Request, res: Response) => {
     try {
       const thought = await Thoughts.findOneAndDelete({ _id: req.params.videoId });
@@ -107,7 +123,7 @@ import { Request, Response } from 'express';
   export const addThoughtReaction = async (req: Request, res: Response) => {
     try {
       const thought = await Thoughts.findOneAndUpdate(
-        { _id: req.params.videoId },
+        { _id: req.params.thoughtId },
         { $addToSet: { responses: req.body } },
         { runValidators: true, new: true }
       );
@@ -128,7 +144,7 @@ import { Request, Response } from 'express';
   export const removeThoughtReaction = async (req: Request, res: Response) => {
     try {
       const thought = await Thoughts.findOneAndUpdate(
-        { _id: req.params.videoId },
+        { _id: req.params.thoughtId },
         { $pull: { reactions: { responseId: req.params.responseId } } },
         { runValidators: true, new: true }
       )
