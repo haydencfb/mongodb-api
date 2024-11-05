@@ -42,23 +42,21 @@ import { Request, Response } from 'express';
   export const createThought = async (req: Request, res: Response) => {
     try {
       const thought = await Thoughts.create(req.body);
-      // const user = await User.findOneAndUpdate(
-      //   { _id: req.body.userId },
-      //   { $addToSet: { thoughts: thought.id } },
-      //   { new: true }
-      // );
+      const user = await User.findOneAndUpdate(
+        { username: req.body.username },
+        { $addToSet: { thoughts: thought._id } },
+        { new: true }
+      );
+      console.log(user);
   
-      // if (!user) {
-      //   return res.status(404).json({
-      //     message: 'thought created, but found no user with that ID',
-      //   });
-      // }
+      if (!user) {
+        return res.status(404).json({
+          message: 'thought created, but found no user with that ID',
+        });
+      }
   
-      // res.json('Created the thought 🎉');
-      // return;
-
-      const newThought = await Thoughts.create({ thought });
-      return res.status(201).json(newThought);
+      res.json('Created the thought 🎉');
+      return;
     } catch (err) {
       console.log(err);
       res.status(500).json(err);
@@ -92,15 +90,15 @@ import { Request, Response } from 'express';
   // deletes a selected thought
   export const deleteThought = async (req: Request, res: Response) => {
     try {
-      const thought = await Thoughts.findOneAndDelete({ _id: req.params.videoId });
+      const thought = await Thoughts.findOneAndDelete({ _id: req.params.thoughtId });
   
       if (!thought) {
         return res.status(404).json({ message: 'No thought with this id!' });
       }
   
       const user = await User.findOneAndUpdate(
-        { thoughts: req.params.videoId },
-        { $pull: { thoughts: req.params.videoId } },
+        { thoughts: req.params.thoughtId },
+        { $pull: { thoughts: req.params.thoughtId } },
         { new: true }
       );
   
@@ -123,7 +121,7 @@ import { Request, Response } from 'express';
     try {
       const thought = await Thoughts.findOneAndUpdate(
         { _id: req.params.thoughtId },
-        { $addToSet: { responses: req.body } },
+        { $addToSet: { reactions: req.body } },
         { runValidators: true, new: true }
       );
 
@@ -144,7 +142,7 @@ import { Request, Response } from 'express';
     try {
       const thought = await Thoughts.findOneAndUpdate(
         { _id: req.params.thoughtId },
-        { $pull: { reactions: { responseId: req.params.responseId } } },
+        { $pull: { reactions: { reactionId: req.params.reactionId } } },
         { runValidators: true, new: true }
       )
 

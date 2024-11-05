@@ -15,14 +15,17 @@ import { Request, Response } from 'express';
   export const getSingleUser = async(req: Request, res: Response) => {
     try {
       const user = await User.findOne({ _id: req.params.userId })
-        .select('-__v');
+        .select('-__v')
+        .populate('thoughts')
+        .populate('friends');
 
       if (!user) {
         res.status(404).json({ message: 'No user with that ID' });
       } else {
         res.json(user);
       }
-    } catch (err) {
+    } catch (err: any) {
+      console.log(err.message);
       res.status(500).json(err);
     }
   }
@@ -59,23 +62,23 @@ import { Request, Response } from 'express';
   // deletes a single user
   export const deleteUser = async(req: Request, res: Response) => {
     try {
-      const user = await User.findOneAndDelete({ _id: req.params.studentId });
+      const user = await User.findOneAndDelete({ _id: req.params.userId });
 
       if (!user) {
           return res.status(404).json({ message: 'No such user exists' });
       }
 
-      // const friend = await Friend.findOneAndUpdate(
-      //     { users: req.params.userId },
-      //     { $pull: { users: req.params.userId } },
-      //     { new: true }
-      // );
+      const friend = await User.findOneAndUpdate(
+          { users: req.params.userId },
+          { $pull: { users: req.params.userId } },
+          { new: true }
+      );
 
-      // if (!friend) {
-      //     return res.status(404).json({
-      //         message: 'User deleted, but no friends found',
-      //     });
-      // }
+      if (!friend) {
+          return res.status(404).json({
+              message: 'User deleted, but no friends found',
+          });
+      }
 
       return res.json({ message: 'User successfully deleted' });
     } catch (err) {
@@ -88,7 +91,7 @@ import { Request, Response } from 'express';
     try {
       const user = await User.findOneAndUpdate(
         { _id: req.params.userId },
-        { $addToSet: { friends: req.body } },
+        { $addToSet: { friends: req.params.friendId } },
         { runValidators: true, new: true }
       )
 
@@ -107,7 +110,7 @@ import { Request, Response } from 'express';
     try {
       const user = await User.findOneAndUpdate(
           { _id: req.params.userId },
-          { $pull: { friends: { friendId: req.params.friendId } } },
+          { $pull: { friends: req.params.friendId } },
           { runValidators: true, new: true }
       );
 

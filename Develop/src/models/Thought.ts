@@ -15,8 +15,6 @@ const thoughtSchema = new Schema<IThought>(
     thoughtText: {
       type: String,
       required: true,
-      // minlength: 1,
-      // maxlength: 280,
       validate: {
           validator: function(value) {
             return value.length >= 1 && value.length <= 280;
@@ -49,6 +47,6 @@ thoughtSchema
     return this.reactions.length;
   })
 
-const Thoughts = model('thought', thoughtSchema);
+const Thoughts = model('Thought', thoughtSchema);
 
 export default Thoughts;

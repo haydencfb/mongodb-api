@@ -3,8 +3,8 @@ import { Schema, Document, model } from 'mongoose';
 interface IUser extends Document {
   username: string;
   email: string;
-  thoughts: Schema.Types.ObjectId;
-  friends: Schema.Types.ObjectId;
+  thoughts: Schema.Types.ObjectId[];
+  friends: Schema.Types.ObjectId[];
 }
 
 // Schema to create User model
@@ -52,6 +52,6 @@ userSchema
   });
 
 // Initialize our User model
-const User = model('user', userSchema);
+const User = model('User', userSchema);
 
-export default User
+export default User;
